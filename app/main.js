@@ -7,8 +7,16 @@ const server = net.createServer((socket) => {
     socket.on("data", (data)=>{
         console.log(data);
         const p = data.toString().split(" ")[1];
-        const res = p === '/' ? '200 OK' : "404 Not Found";
-        socket.write(`HTTP/1.1 ${res}\r\n\r\n`);
+        if(p === '/'){
+            socket.write(`HTTP/1.1 200 OK\r\n\r\n`);
+        }
+        else if(p.includes('/echo')){
+            const content = url.split('/echo/')[1];
+            socket.write(`HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${content.length}\r\n\r\n${content}`);
+        }
+        else{
+            socket.write('HTTP/1.1 404 Not Found\r\n\r\n');
+        }
     });
 
     socket.on("close", () => {
