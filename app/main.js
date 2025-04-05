@@ -20,7 +20,8 @@ const server = net.createServer((socket) => {
             socket.write(`HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${content.length}\r\n\r\n${content}`);
         }
         else if(p.includes('/user-agent')){
-            socket.write(`HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${h.length}\r\n\r\n${h}`);
+            const content = p.split('\r')[0];
+            socket.write(`HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${content.length}\r\n\r\n${h}`);
         }
         else{
             socket.write('HTTP/1.1 404 Not Found\r\n\r\n');
