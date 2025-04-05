@@ -7,7 +7,7 @@ const server = net.createServer((socket) => {
     socket.on("data", (data)=>{
         console.log(data);
         const p = data.toString().split(" ")[1];
-        const res = p === '/' ? '200 OK' : "404 NOT FOUND";
+        const res = p === '/' ? '200 OK' : "404 Not Found";
         socket.write(`HTTP/1.1 ${res} \r\n\r\n`);
     });
 
