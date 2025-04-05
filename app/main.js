@@ -5,7 +5,7 @@ const net = require("net");
 const server = net.createServer((socket) => {
     
     socket.on("data", (data)=>{
-        console.log(data);
+        console.log(data.toString);
         const p = data.toString().split(" ")[1];
         if(p === '/'){
             socket.write(`HTTP/1.1 200 OK\r\n\r\n`);
