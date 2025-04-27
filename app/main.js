@@ -10,8 +10,10 @@ const baseDirectory = (directoryIndex !== -1 && args[directoryIndex + 1]) ? args
 const server = net.createServer((socket) => {
     socket.on("data", (data) => {
         const d = data.toString();
-        const headers = d.split('\r\n');
-        const url = headers[0].split(" ")[1];
+        const [headers,body] = d.split('\r\n\r\n');
+        const header = headers.split('\r\n');
+        const [req, ...headerspart] = header;
+        const [method, url] = req.split(" ");
         if (url === '/') {
             socket.write(`HTTP/1.1 200 OK\r\n\r\n`);
             socket.end();
@@ -27,22 +29,37 @@ const server = net.createServer((socket) => {
         } else if (url.startsWith('/files')) {
             const filename = url.slice('/files/'.length);
             const filepath = path.join(baseDirectory,filename);
-            fs.readFile(`${filepath}`,(err, content)=>{
-                if(err){
-                    console.log(err);
-                    socket.write('HTTP/1.1 404 Not Found\r\n\r\n');
-                }
-                else{
-                    socket.write(
-                        "HTTP/1.1 200 OK\r\n" +
-                        "Content-Type: application/octet-stream\r\n" +
-                        `Content-Length: ${content.length}\r\n` +
-                        "\r\n"
-                    );
-                    socket.write(content);
-                }
+            
+            if(method === "GET"){
+                fs.readFile(`${filepath}`,(err, content)=>{
+                    if(err){
+                        console.log(err);
+                        socket.write('HTTP/1.1 404 Not Found\r\n\r\n');
+                    }
+                    else{
+                        socket.write(
+                            "HTTP/1.1 200 OK\r\n" +
+                            "Content-Type: application/octet-stream\r\n" +
+                            `Content-Length: ${content.length}\r\n` +
+                            "\r\n"
+                        );
+                        socket.write(content);
+                    }
+                    socket.end();
+                })
+            } else if (method === "POST"){
+                fs.writeFile(filepath, body, (e) => {
+                    if(e){
+                        console.log(e);
+                    } else {
+                        socket.write("HTTP/1.1 201 Created\r\n\r\n");
+                    }
+                    socket.end();
+                })
+            } else {
+                socket.write("HTTP/1.1 405 Method Not Allowed\r\n\r\n");
                 socket.end();
-            })
+            }
         } else {
             socket.write('HTTP/1.1 404 Not Found\r\n\r\n');
             socket.end();
