@@ -39,7 +39,7 @@ const server = net.createServer((socket) => {
         } else if (url === '/user-agent') {
             const userAgentHeader = headerspart.find((s) => s.startsWith("User-Agent"));
             const content = userAgentHeader ? userAgentHeader.split(": ")[1] : "";
-            socket.write(`HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${content.length}\r\n\r\n${content}`);
+            socket.write(`${responseHeaders}Content-Length: ${content.length}\r\n\r\n${content}`);
         } else if (url.startsWith('/files')) {
             const filename = url.slice('/files/'.length);
             const filepath = path.join(baseDirectory,filename);
