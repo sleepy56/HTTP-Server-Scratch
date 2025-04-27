@@ -18,7 +18,7 @@ const server = net.createServer((socket) => {
         const encodingHeader = headerspart.find((s) => s.startsWith('Accept-Encoding'));
         let encoding= encodingHeader && encodingHeader.includes('gzip') ? 'gzip' : '';
         const close = headerspart.find((s)=>s.startsWith("Connection"));
-        let responseHeaders = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n";
+        let responseHeaders = "HTTP/1.1 200 OK\r\n";
         if (close && close.includes('close')){
             responseHeaders += "Connection: close\r\n";
             socket.once('drain', () => {
@@ -26,8 +26,9 @@ const server = net.createServer((socket) => {
             });
         }
         if (url === '/') {
-            socket.write(`HTTP/1.1 200 OK\r\n\r\n`);
+            socket.write(`${responseHeaders}\r\n`);
         } else if (url.startsWith('/echo/')) {
+            responseHeaders+="Content-Type: text/plain\r\n";
             let content = url.slice('/echo/'.length);
             if(encoding === 'gzip'){
                 responseHeaders+="Content-Encoding: gzip\r\n";
@@ -37,6 +38,7 @@ const server = net.createServer((socket) => {
             socket.write(`${responseHeaders}\r\n`);
             socket.write(content);
         } else if (url === '/user-agent') {
+            responseHeaders+="Content-Type: text/plain\r\n";
             const userAgentHeader = headerspart.find((s) => s.startsWith("User-Agent"));
             const content = userAgentHeader ? userAgentHeader.split(": ")[1] : "";
             socket.write(`${responseHeaders}Content-Length: ${content.length}\r\n\r\n${content}`);
