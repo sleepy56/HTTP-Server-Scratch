@@ -19,7 +19,9 @@ const server = net.createServer((socket) => {
         let encoding= encodingHeader && encodingHeader.includes('gzip') ? 'gzip' : '';
         const close = headerspart.find((s)=>s.startsWith("Connection"));
         if (close && close.includes('close')){
-            socket.end();
+            socket.once('drain', () => {
+                socket.end();
+            });
         }
         if (url === '/') {
             socket.write(`HTTP/1.1 200 OK\r\n\r\n`);
