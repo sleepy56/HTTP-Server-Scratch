@@ -1,6 +1,7 @@
 const net = require("net");
 const fs = require("fs");
 const path = require("path");
+const zlib = require("zlib");
 
 const args = process.argv.slice(2);
 const directoryIndex = args.indexOf("--directory");
@@ -21,10 +22,11 @@ const server = net.createServer((socket) => {
             socket.write(`HTTP/1.1 200 OK\r\n\r\n`);
             socket.end();
         } else if (url.startsWith('/echo/')) {
-            const content = url.slice('/echo/'.length);
+            let content = url.slice('/echo/'.length);
             let responseHeaders = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n";
             if(encoding === 'gzip'){
                 responseHeaders+="Content-Encoding: gzip\r\n";
+                content = zlib.gzipSync(content);
             }
             if(content){
                 responseHeaders+=`Content-Length: ${content.length}\r\n`;
