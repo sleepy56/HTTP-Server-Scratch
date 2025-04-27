@@ -20,7 +20,6 @@ const server = net.createServer((socket) => {
 
         if (url === '/') {
             socket.write(`HTTP/1.1 200 OK\r\n\r\n`);
-            socket.end();
         } else if (url.startsWith('/echo/')) {
             let content = url.slice('/echo/'.length);
             let responseHeaders = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n";
@@ -31,12 +30,10 @@ const server = net.createServer((socket) => {
             responseHeaders+=`Content-Length: ${content.length}\r\n`;
             socket.write(`${responseHeaders}\r\n`);
             socket.write(content);
-            socket.end();
         } else if (url === '/user-agent') {
             const userAgentHeader = headerspart.find((s) => s.startsWith("User-Agent"));
             const content = userAgentHeader ? userAgentHeader.split(": ")[1] : "";
             socket.write(`HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${content.length}\r\n\r\n${content}`);
-            socket.end();
         } else if (url.startsWith('/files')) {
             const filename = url.slice('/files/'.length);
             const filepath = path.join(baseDirectory,filename);
@@ -56,7 +53,6 @@ const server = net.createServer((socket) => {
                         );
                         socket.write(content);
                     }
-                    socket.end();
                 })
             } else if (method === "POST"){
                 fs.writeFile(filepath, body, (e) => {
@@ -65,18 +61,18 @@ const server = net.createServer((socket) => {
                     } else {
                         socket.write("HTTP/1.1 201 Created\r\n\r\n");
                     }
-                    socket.end();
                 })
             } else {
                 socket.write("HTTP/1.1 405 Method Not Allowed\r\n\r\n");
-                socket.end();
             }
         } else {
             socket.write('HTTP/1.1 404 Not Found\r\n\r\n');
-            socket.end();
         }
     });
 
+    socket.on("close", (err) =>{
+        socket.end();
+    })
     socket.on("error", (err) => {
         console.error(`Socket error: ${err}`);
     });
