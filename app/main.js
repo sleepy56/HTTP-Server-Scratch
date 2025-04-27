@@ -15,7 +15,7 @@ const server = net.createServer((socket) => {
         const [req, ...headerspart] = header;
         const [method, url] = req.split(" ");
         const encodingHeader = headerspart.find((s) => s.startsWith('Accept-Encoding'));
-        let encoding= encodingHeader && encodingHeader==='gzip' ? 'gzip' : '';
+        let encoding= encodingHeader && encodingHeader.includes('gzip') ? 'gzip' : '';
 
         if (url === '/') {
             socket.write(`HTTP/1.1 200 OK\r\n\r\n`);
