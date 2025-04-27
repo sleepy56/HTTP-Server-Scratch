@@ -18,6 +18,7 @@ const server = net.createServer((socket) => {
         const encodingHeader = headerspart.find((s) => s.startsWith('Accept-Encoding'));
         let encoding= encodingHeader && encodingHeader.includes('gzip') ? 'gzip' : '';
         const close = headerspart.find((s)=>s.startsWith("Connection"));
+        let responseHeaders = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n";
         if (close && close.includes('close')){
             responseHeaders += "Connection: close\r\n";
             socket.once('drain', () => {
@@ -28,7 +29,6 @@ const server = net.createServer((socket) => {
             socket.write(`HTTP/1.1 200 OK\r\n\r\n`);
         } else if (url.startsWith('/echo/')) {
             let content = url.slice('/echo/'.length);
-            let responseHeaders = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n";
             if(encoding === 'gzip'){
                 responseHeaders+="Content-Encoding: gzip\r\n";
                 content = zlib.gzipSync(content);
