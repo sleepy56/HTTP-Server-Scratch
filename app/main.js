@@ -19,6 +19,7 @@ const server = net.createServer((socket) => {
         let encoding= encodingHeader && encodingHeader.includes('gzip') ? 'gzip' : '';
         const close = headerspart.find((s)=>s.startsWith("Connection"));
         if (close && close.includes('close')){
+            responseHeaders += "Connection: close\r\n";
             socket.once('drain', () => {
                 socket.end();
             });
