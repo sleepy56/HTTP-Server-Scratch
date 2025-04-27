@@ -22,7 +22,7 @@ const server = net.createServer((socket) => {
             socket.write(`HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${content.length}\r\n\r\n${content}`);
             socket.end();
         } else if (url === '/user-agent') {
-            const userAgentHeader = headers.find((s) => s.startsWith("User-Agent"));
+            const userAgentHeader = headerspart.find((s) => s.startsWith("User-Agent"));
             const content = userAgentHeader ? userAgentHeader.split(": ")[1] : "";
             socket.write(`HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${content.length}\r\n\r\n${content}`);
             socket.end();
