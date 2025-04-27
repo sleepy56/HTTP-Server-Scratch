@@ -6,10 +6,6 @@ const args = process.argv.slice(2);
 const directoryIndex = args.indexOf("--directory");
 const baseDirectory = (directoryIndex !== -1 && args[directoryIndex + 1]) ? args[directoryIndex + 1] : null;
 
-if (!baseDirectory) {
-    console.error("Error: --directory flag is required");
-    process.exit(1);
-}
 // Uncomment this to pass the first stage
 const server = net.createServer((socket) => {
     socket.on("data", (data) => {
