@@ -21,9 +21,6 @@ const server = net.createServer((socket) => {
         let responseHeaders = "HTTP/1.1 200 OK\r\n";
         if (close && close.includes('close')){
             responseHeaders += "Connection: close\r\n";
-            socket.once('drain', () => {
-                socket.end();
-            });
         }
         if (url === '/') {
             socket.write(`${responseHeaders}\r\n`);
@@ -75,6 +72,9 @@ const server = net.createServer((socket) => {
             }
         } else {
             socket.write('HTTP/1.1 404 Not Found\r\n\r\n');
+        }
+        if (close && close.includes('close')){
+            socket.end();
         }
     });
 
