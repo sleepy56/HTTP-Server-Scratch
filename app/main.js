@@ -28,10 +28,9 @@ const server = net.createServer((socket) => {
                 responseHeaders+="Content-Encoding: gzip\r\n";
                 content = zlib.gzipSync(content);
             }
-            if(content){
-                responseHeaders+=`Content-Length: ${content.length}\r\n`;
-            }
-            socket.write(`${responseHeaders}\r\n${content ? content : body}`);
+            responseHeaders+=`Content-Length: ${content.length}\r\n`;
+            socket.write(`${responseHeaders}\r\n`);
+            socket.write(content);
             socket.end();
         } else if (url === '/user-agent') {
             const userAgentHeader = headerspart.find((s) => s.startsWith("User-Agent"));
