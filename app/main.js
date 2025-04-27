@@ -26,6 +26,9 @@ const server = net.createServer((socket) => {
             if(encoding === 'gzip'){
                 responseHeaders+="Content-Encoding: gzip\r\n";
             }
+            if(content){
+                responseHeaders+=`Content-Length: ${content}\r\n`;
+            }
             socket.write(`${responseHeaders}\r\n${body}`);
             socket.end();
         } else if (url === '/user-agent') {
